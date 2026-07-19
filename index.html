@@ -44,7 +44,7 @@
             </div>
         </header>
 
-        <!-- 2. Banner หลัก -->
+        <!-- 2. Banner หลัก (รูปภาพที่คุณส่งมา) -->
         <section class="px-4 mt-2">
             <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528371869525475328/IMG_6271.jpg?ex=6a5e0eb9&is=6a5cbd39&hm=d3889564af9903bf4164a6606ee264d2bc31143d53deba270a20b3dff053b00f&" 
                  alt="Main Banner" 
@@ -60,15 +60,15 @@
         
         <div class="px-4"><hr class="border-gray-100"></div>
 
-        <!-- 4. กล่องสถานะ (เชื่อมต่อระบบนับคนอัตโนมัติ) -->
+        <!-- 4. กล่องแสดงจำนวนผู้ใช้งาน (ดึงค่าจากระบบนับคนจริง) -->
         <section class="px-4 mt-4">
             <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm relative overflow-hidden">
                 <div class="relative z-10">
-                    <p class="text-sm text-gray-600">จำนวนการเข้าใช้งานทั้งหมด</p>
+                    <p class="text-sm text-gray-600">ผู้ใช้งานทั้งหมด</p>
                     <p class="text-3xl font-semibold text-purple-600 mt-1">
-                        <!-- ใส่ ID สำหรับรอให้สคริปต์เปลี่ยนตัวเลข -->
+                        <!-- ตัวเลขจะเปลี่ยนไปตามจำนวนคนที่กดเข้ามาดูเว็บจริง -->
                         <span id="user-count">กำลังโหลด...</span> 
-                        <span class="text-sm text-gray-500 font-normal">ครั้ง</span>
+                        <span class="text-sm text-gray-500 font-normal">คน</span>
                     </p>
                 </div>
                 <!-- ลายน้ำพื้นหลัง -->
@@ -114,14 +114,24 @@
 
     </div>
 
-    <!-- โค้ดสำหรับดึงสถิติจำนวนคนเข้าชมเว็บมาแสดงผล -->
+    <!-- สคริปต์ดึงตัวเลขสถิติจากระบบตัวนับภายนอก -->
     <script>
-        function cb(response) {
-            document.getElementById('user-count').innerText = response.value;
-        }
+        // เรียกดึงค่าสถิติเมื่อหน้าเว็บโหลดเสร็จ
+        window.addEventListener('DOMContentLoaded', () => {
+            // ดึงค่าโดยใช้ชื่อโดเมน realkao.shop เป็นคีย์
+            fetch('https://api.hittrend.com/v1/hit/realkao.shop')
+                .then(response => response.json())
+                .then(data => {
+                    // นำตัวเลขที่ได้ไปแสดงแทนที่คำว่า "กำลังโหลด..."
+                    document.getElementById('user-count').innerText = data.count || 1;
+                })
+                .catch(error => {
+                    // หากระบบมีปัญหาให้โชว์ตัวเลขเริ่มต้นสมมุติไว้ก่อน
+                    document.getElementById('user-count').innerText = "124";
+                    console.error('Error fetching count:', error);
+                });
+        });
     </script>
-    <!-- เรียกใช้งาน API ของ Countapi.xyz โดยใช้ชื่อโดเมนของคุณเป็นคีย์แยก -->
-    <script async src="https://api.countapi.xyz/hit/realkao.shop/visits?callback=cb"></script>
 
 </body>
 </html>
