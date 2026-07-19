@@ -44,7 +44,7 @@
             </div>
         </header>
 
-        <!-- 2. Banner หลัก (รูปภาพที่คุณส่งมา) -->
+        <!-- 2. Banner หลัก (รูปภาพที่คุณส่งมาตอนแรก) -->
         <section class="px-4 mt-2">
             <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528371869525475328/IMG_6271.jpg?ex=6a5e0eb9&is=6a5cbd39&hm=d3889564af9903bf4164a6606ee264d2bc31143d53deba270a20b3dff053b00f&" 
                  alt="Main Banner" 
@@ -60,31 +60,14 @@
         
         <div class="px-4"><hr class="border-gray-100"></div>
 
-        <!-- 4. กล่องแสดงจำนวนผู้ใช้งาน (ดึงค่าจากระบบนับคนจริง) -->
+        <!-- 4. สินค้าชิ้นเดียว แนวนอนขนาดใหญ่ (เปลี่ยนรูปภาพใหม่ตามที่ระบุ) -->
         <section class="px-4 mt-4">
-            <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm relative overflow-hidden">
-                <div class="relative z-10">
-                    <p class="text-sm text-gray-600">ผู้ใช้งานทั้งหมด</p>
-                    <p class="text-3xl font-semibold text-purple-600 mt-1">
-                        <!-- ตัวเลขจะเปลี่ยนไปตามจำนวนคนที่กดเข้ามาดูเว็บจริง -->
-                        <span id="user-count">กำลังโหลด...</span> 
-                        <span class="text-sm text-gray-500 font-normal">คน</span>
-                    </p>
-                </div>
-                <!-- ลายน้ำพื้นหลัง -->
-                <div class="absolute -right-4 -bottom-4 w-20 h-20 border-4 border-purple-50 rounded-full"></div>
-            </div>
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528380417978138624/149C212E-F29E-4F42-98AB-9F4C1BB39C76.png?ex=6a5e16af&is=6a5cc52f&hm=36b3f1b5c576404368440ddc60bb694ae71cc52813d7fa8d1331b106e30e46fd&" 
+                 alt="Large Product Banner" 
+                 class="w-full rounded-2xl object-cover h-auto shadow-sm border border-gray-100">
         </section>
 
-        <!-- 5. สินค้าตัวอย่าง (Grid 2x2) -->
-        <section class="px-4 mt-6 grid grid-cols-2 gap-3">
-            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
-            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
-            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
-            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
-        </section>
-
-        <!-- 6. รายการสั่งซื้อล่าสุด -->
+        <!-- 5. รายการสั่งซื้อล่าสุด -->
         <section class="px-4 mt-6 bg-gray-50 pt-4 pb-12 rounded-t-3xl">
             <h2 class="text-purple-600 font-semibold">รายการสั่งซื้อล่าสุด</h2>
             <p class="text-xs text-gray-500 mb-3">Latest Order List</p>
@@ -107,31 +90,12 @@
             </div>
         </section>
 
-        <!-- 7. ปุ่มลอย (Music Button) -->
+        <!-- 6. ปุ่มลอย (Music Button) -->
         <button class="fixed bottom-24 right-4 bg-purple-600 text-white w-12 h-12 rounded-full flex justify-center items-center shadow-lg shadow-purple-300 transform transition active:scale-95 z-20">
             <i class="fa-solid fa-music"></i>
         </button>
 
     </div>
-
-    <!-- สคริปต์ดึงตัวเลขสถิติจากระบบตัวนับภายนอก -->
-    <script>
-        // เรียกดึงค่าสถิติเมื่อหน้าเว็บโหลดเสร็จ
-        window.addEventListener('DOMContentLoaded', () => {
-            // ดึงค่าโดยใช้ชื่อโดเมน realkao.shop เป็นคีย์
-            fetch('https://api.hittrend.com/v1/hit/realkao.shop')
-                .then(response => response.json())
-                .then(data => {
-                    // นำตัวเลขที่ได้ไปแสดงแทนที่คำว่า "กำลังโหลด..."
-                    document.getElementById('user-count').innerText = data.count || 1;
-                })
-                .catch(error => {
-                    // หากระบบมีปัญหาให้โชว์ตัวเลขเริ่มต้นสมมุติไว้ก่อน
-                    document.getElementById('user-count').innerText = "124";
-                    console.error('Error fetching count:', error);
-                });
-        });
-    </script>
 
 </body>
 </html>
