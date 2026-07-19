@@ -1,54 +1,127 @@
-<!-- แทนที่ตรงส่วนกล่องผู้ใช้งานเดิมด้วย ID สำหรับให้ JavaScript สั่งเปลี่ยนตัวเลข -->
-<div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm relative overflow-hidden">
-    <div class="relative z-10">
-        <p class="text-sm text-gray-600">ผู้ใช้งานออนไลน์ขณะนี้</p>
-        <!-- เพิ่ม id="active-users" เพื่อให้ดึงค่ามาใส่ตรงนี้ -->
-        <p class="text-3xl font-semibold text-purple-600 mt-1">
-            <span id="active-users">0</span> 
-            <span class="text-sm text-gray-500 font-normal">คน</span>
-        </p>
-    </div>
-    <div class="absolute -right-4 -bottom-4 w-20 h-20 border-4 border-purple-50 rounded-full"></div>
-</div>
-
-<!-- โค้ด JavaScript สำหรับเชื่อมต่อฐานข้อมูล (วางไว้ก่อนปิด </body>) -->
-<script type="module">
-  // 1. นำเข้า Firebase SDK
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  // 2. ตั้งค่า Firebase Config (ต้องไปสมัครและสร้างโปรเจกต์ที่ firebase.google.com)
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  // 3. เริ่มต้นทำงาน
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // สร้าง ID สุ่มสำหรับผู้ใช้งานแต่ละคนที่เข้ามาเปิดเว็บ
-  const userId = "user_" + Math.random().toString(36).substr(2, 9);
-  const myPresenceRef = ref(db, 'online_users/' + userId);
-  const countRef = ref(db, 'online_users');
-
-  // เมื่อผู้ใช้เข้ามา ให้บันทึกสถานะว่าออนไลน์ (เก็บเวลา หรือข้อมูลเบื้องต้นได้)
-  set(myPresenceRef, { online: true, last_active: Date.now() });
-
-  // เมื่อผู้ใช้ปิดหน้าเว็บ หรือเน็ตหลุด ให้ลบข้อมูลคนนี้ออกจากฐานข้อมูลโดยอัตโนมัติ
-  onDisconnect(myPresenceRef).remove();
-
-  // 4. คอยฟังคำสั่งดึงยอดรวมคนออนไลน์ทั้งหมดมาแสดงบนหน้าเว็บแบบเรียลไทม์
-  onValue(countRef, (snapshot) => {
-    const users = snapshot.val();
-    const totalOnline = users ? Object.keys(users).length : 0;
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rexzy Store</title>
+    <!-- เรียกใช้ Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- เรียกใช้ Font Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- เรียกใช้ Font Awesome สำหรับ Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    // เปลี่ยนตัวเลขบนหน้าจอ HTML ตามจำนวนจริง
-    document.getElementById('active-users').innerText = totalOnline;
-  });
-</script>
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f7f7fa;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Container หลัก (จำลองหน้าจอมือถือ) -->
+    <div class="max-w-md mx-auto bg-white min-h-screen relative pb-24 shadow-lg">
+
+        <!-- 1. Header (เมนู + ค้นหา) -->
+        <header class="flex justify-between items-center px-4 py-4 bg-white sticky top-0 z-10">
+            <button class="text-gray-500 text-2xl border border-gray-200 rounded-lg px-3 py-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="relative w-48">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" placeholder="ค้นหาสินค้า..." class="w-full border border-gray-200 rounded-full py-1.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-1 focus:ring-purple-400">
+            </div>
+        </header>
+
+        <!-- 2. Banner หลัก -->
+        <section class="px-4 mt-2">
+            <img src="https://cdn.discordapp.com/attachments/1528247158069792863/1528371869525475328/IMG_6271.jpg?ex=6a5e0eb9&is=6a5cbd39&hm=d3889564af9903bf4164a6606ee264d2bc31143d53deba270a20b3dff053b00f&" 
+                 alt="Main Banner" 
+                 class="w-full rounded-2xl object-cover h-32 md:h-40 shadow-sm">
+        </section>
+
+        <!-- 3. หมวดหมู่ (ประกาศ) -->
+        <section class="px-4 mt-4 mb-2 flex gap-2 overflow-x-auto no-scrollbar py-1">
+            <button class="whitespace-nowrap bg-purple-100 text-purple-600 px-4 py-1.5 rounded-xl text-sm font-medium">ประกาศ</button>
+            <button class="whitespace-nowrap bg-purple-100 text-purple-600 px-4 py-1.5 rounded-xl text-sm font-medium">ประกาศ</button>
+            <button class="whitespace-nowrap bg-purple-100 text-purple-600 px-4 py-1.5 rounded-xl text-sm font-medium">ประกาศ</button>
+        </section>
+        
+        <div class="px-4"><hr class="border-gray-100"></div>
+
+        <!-- 4. กล่องสถานะ (เชื่อมต่อระบบนับคนอัตโนมัติ) -->
+        <section class="px-4 mt-4">
+            <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-sm text-gray-600">จำนวนการเข้าใช้งานทั้งหมด</p>
+                    <p class="text-3xl font-semibold text-purple-600 mt-1">
+                        <!-- ใส่ ID สำหรับรอให้สคริปต์เปลี่ยนตัวเลข -->
+                        <span id="user-count">กำลังโหลด...</span> 
+                        <span class="text-sm text-gray-500 font-normal">ครั้ง</span>
+                    </p>
+                </div>
+                <!-- ลายน้ำพื้นหลัง -->
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 border-4 border-purple-50 rounded-full"></div>
+            </div>
+        </section>
+
+        <!-- 5. สินค้าตัวอย่าง (Grid 2x2) -->
+        <section class="px-4 mt-6 grid grid-cols-2 gap-3">
+            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
+            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
+            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
+            <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=1000&h=500" alt="Product" class="w-full h-24 object-cover rounded-xl shadow-sm">
+        </section>
+
+        <!-- 6. รายการสั่งซื้อล่าสุด -->
+        <section class="px-4 mt-6 bg-gray-50 pt-4 pb-12 rounded-t-3xl">
+            <h2 class="text-purple-600 font-semibold">รายการสั่งซื้อล่าสุด</h2>
+            <p class="text-xs text-gray-500 mb-3">Latest Order List</p>
+            
+            <div class="flex gap-3 overflow-x-auto no-scrollbar pb-4">
+                <div class="min-w-[200px] bg-white p-2 rounded-xl flex gap-3 shadow-sm border border-gray-100 items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg shrink-0"></div>
+                    <div>
+                        <p class="text-xs text-purple-600 font-medium">ทดสอบ 2</p>
+                        <p class="text-[10px] text-gray-400">08/05/2569 13:35</p>
+                    </div>
+                </div>
+                <div class="min-w-[200px] bg-white p-2 rounded-xl flex gap-3 shadow-sm border border-gray-100 items-center">
+                    <img src="https://images.unsplash.com/photo-1627398225058-f4b62db47bd8?auto=format&fit=crop&q=80&w=100&h=100" class="w-12 h-12 object-cover rounded-lg shrink-0">
+                    <div>
+                        <p class="text-xs text-purple-600 font-medium">สินค้าทดสอบ 1</p>
+                        <p class="text-[10px] text-gray-400">08/05/2569 13:34</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ปุ่มลอย (Music Button) -->
+        <button class="fixed bottom-24 right-4 bg-purple-600 text-white w-12 h-12 rounded-full flex justify-center items-center shadow-lg shadow-purple-300 transform transition active:scale-95 z-20">
+            <i class="fa-solid fa-music"></i>
+        </button>
+
+    </div>
+
+    <!-- โค้ดสำหรับดึงสถิติจำนวนคนเข้าชมเว็บมาแสดงผล -->
+    <script>
+        function cb(response) {
+            document.getElementById('user-count').innerText = response.value;
+        }
+    </script>
+    <!-- เรียกใช้งาน API ของ Countapi.xyz โดยใช้ชื่อโดเมนของคุณเป็นคีย์แยก -->
+    <script async src="https://api.countapi.xyz/hit/realkao.shop/visits?callback=cb"></script>
+
+</body>
+</html>
